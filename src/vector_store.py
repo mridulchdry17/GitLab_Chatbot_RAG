@@ -14,7 +14,6 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 import tiktoken
 
-# Disable torch.compile to avoid compatibility issues with PyTorch 2.0.1+cpu
 os.environ['TORCH_COMPILE_DISABLE'] = '1'
 
 
@@ -29,8 +28,7 @@ class VectorStore:
         
         # Initialize embedding model
         # Using BGE-small-en-v1.5: 512 token limit, 384 dimensions, faster for real-time queries
-        # CPU-only mode (no GPU needed)
-        print("📦 Loading embedding model (BGE-small-en-v1.5) on CPU...")
+        print("Loading embedding model (BGE-small-en-v1.5) on CPU...")
         start_time = time.time()
         self.embedding_model = HuggingFaceEmbeddings(
             model_name='BAAI/bge-small-en-v1.5',
@@ -43,7 +41,7 @@ class VectorStore:
             }
         )
         load_time = time.time() - start_time
-        print(f"✅ Embedding model loaded successfully! (took {load_time:.2f}s)")
+        print(f"Embedding model loaded successfully! (took {load_time:.2f}s)")
         print(f"   Model: BGE-small-en-v1.5 | Dimensions: 384 | Context: 512 tokens")
         
         # Initialize text splitter for token-based chunking
@@ -139,11 +137,11 @@ class VectorStore:
     def add_chunks(self, chunks: List[Dict], apply_token_chunking: bool = True):
         """Add chunks to vector store with optional token-based chunking"""
         if not chunks:
-            print("⚠️  No chunks to add")
+            print("No chunks to add")
             return
         
         start_time = time.time()
-        print(f"\n📊 Processing {len(chunks):,} chunks...")
+        print(f"\nProcessing {len(chunks):,} chunks...")
         
         # Convert to LangChain documents
         print("   Converting to LangChain documents...")
@@ -151,13 +149,13 @@ class VectorStore:
         
         # Apply token-based chunking if requested
         if apply_token_chunking:
-            print("   ✂️  Applying token-based chunking (~300 tokens with 50 overlap)...")
+            print("    Applying token-based chunking (~300 tokens with 50 overlap)...")
             chunk_start = time.time()
             documents = self._split_with_metadata_preservation(documents)
             chunk_time = time.time() - chunk_start
-            print(f"   ✅ Split into {len(documents):,} token-based chunks (took {chunk_time:.2f}s)")
+            print(f"  Split into {len(documents):,} token-based chunks (took {chunk_time:.2f}s)")
         else:
-            print(f"   ℹ️  Using original chunks (no splitting)")
+            print(f"  Using original chunks (no splitting)")
         
         # Check existing documents
         try:
@@ -167,17 +165,17 @@ class VectorStore:
         
         # Skip embedding creation if embeddings already exist
         if existing_count > 0:
-            print(f"   ✅ Found {existing_count:,} existing documents in vector store")
-            print(f"   ⏭️  Skipping embedding creation (embeddings already exist)")
-            print(f"   💡 To recreate embeddings, delete the 'chroma_db' folder and reinitialize")
+            print(f"   Found {existing_count:,} existing documents in vector store")
+            print(f"   Skipping embedding creation (embeddings already exist)")
+            print(f"   To recreate embeddings, delete the 'chroma_db' folder and reinitialize")
             total_time = time.time() - start_time
-            print(f"\n✅ Using existing embeddings!")
-            print(f"   📈 Total documents in vector store: {existing_count:,}")
-            print(f"   ⏱️  Total time: {total_time:.2f}s (no embedding needed)\n")
+            print(f"\nUsing existing embeddings!")
+            print(f"  Total documents in vector store: {existing_count:,}")
+            print(f"  Total time: {total_time:.2f}s (no embedding needed)\n")
             return
         
         # Add to vector store with progress logging (only if no existing embeddings)
-        print(f"\n🔢 Creating embeddings for {len(documents):,} documents...")
+        print(f"\nCreating embeddings for {len(documents):,} documents...")
         print("   (This may take a few minutes on CPU - please wait...)")
         embed_start = time.time()
         
@@ -195,12 +193,12 @@ class VectorStore:
                 elapsed = time.time() - embed_start
                 rate = batch_num / elapsed if elapsed > 0 else 0
                 remaining = (total_batches - batch_num) / rate if rate > 0 else 0
-                print(f"   ⏳ Progress: {batch_num:,}/{total_batches:,} batches "
+                print(f"   Progress: {batch_num:,}/{total_batches:,} batches "
                       f"({batch_num * batch_size:,}/{len(documents):,} docs) | "
                       f"ETA: {remaining/60:.1f}min")
         
         # Persist to disk (ChromaDB with persist_directory auto-persists)
-        print("   💾 Saving embeddings to disk...")
+        print("  Saving embeddings to disk...")
         # Note: With persist_directory set, ChromaDB auto-persists
         # Explicit persist() may not be available in newer LangChain versions
         try:
@@ -214,10 +212,10 @@ class VectorStore:
         embed_time = time.time() - embed_start
         final_count = self.vector_store._collection.count()
         
-        print(f"\n✅ Successfully processed embeddings!")
-        print(f"   📈 Total documents in vector store: {final_count:,}")
-        print(f"   ⏱️  Total time: {total_time/60:.2f}min (embedding: {embed_time/60:.2f}min)")
-        print(f"   🚀 Average speed: {len(documents)/embed_time:.1f} docs/sec\n")
+        print(f"\nSuccessfully processed embeddings!")
+        print(f"  Total documents in vector store: {final_count:,}")
+        print(f"  Total time: {total_time/60:.2f}min (embedding: {embed_time/60:.2f}min)")
+        print(f"  Average speed: {len(documents)/embed_time:.1f} docs/sec\n")
     
     def search(self, query: str, n_results: int = 5) -> List[Dict]:
         """Search for similar chunks with custom metadata"""
@@ -252,17 +250,17 @@ class VectorStore:
     def initialize(self, apply_token_chunking: bool = True):
         """Initialize vector store with data"""
         print("\n" + "="*60)
-        print("🚀 INITIALIZING VECTOR STORE")
+        print("INITIALIZING VECTOR STORE")
         print("="*60)
         chunks = self.load_chunks()
         if chunks:
-            print(f"📁 Loaded {len(chunks):,} chunks from JSON file")
+            print(f"Loaded {len(chunks):,} chunks from JSON file")
             self.add_chunks(chunks, apply_token_chunking=apply_token_chunking)
             print("="*60)
-            print("✅ VECTOR STORE INITIALIZATION COMPLETE!")
+            print("VECTOR STORE INITIALIZATION COMPLETE!")
             print("="*60 + "\n")
         else:
-            print("⚠️  No chunks found. Please run scraper.py first.")
+            print("No chunks found. Please run scraper.py first.")
     
     def get_stats(self) -> Dict:
         """Get statistics about the vector store"""

@@ -323,7 +323,7 @@ class GitLabScraper:
             json.dump(all_chunks, f, indent=2, ensure_ascii=False)
         
         print(f"\n{'=' * 60}")
-        print(f"✅ Scraping complete!")
+        print(f"Scraping complete!")
         print(f"   Total pages scraped: {len(handbook_urls) + len(direction_urls)}")
         print(f"   Total chunks extracted: {len(all_chunks)}")
         print(f"   Saved to: {output_file}")
