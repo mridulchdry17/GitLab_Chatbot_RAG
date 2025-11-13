@@ -1,5 +1,7 @@
 # 🤖 GitLab Handbook Chatbot
 
+https://www.loom.com/share/288dec5a3533427585921d8e9693099f
+
 <div align="center">
 
 **An intelligent GenAI chatbot that helps employees and aspiring employees easily access information from GitLab's Handbook and Direction pages.**
@@ -374,4 +376,5 @@ Powered by **LangChain** & **Google Gemini AI**
 **⭐ If you find this project helpful, please consider giving it a star! ⭐**
 
 </div>
+
 
