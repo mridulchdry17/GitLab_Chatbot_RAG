@@ -211,9 +211,7 @@ jovean_intern/
 
 ### Main Documentation
 
-- **[Quick Start Guide](QUICK_START.md)** - 5-minute setup guide
 - **[Features List](FEATURES.md)** - Complete feature overview
-- **[Project Write-up](PROJECT_WRITEUP.md)** - Detailed technical documentation
 
 ### Technical Documentation
 
@@ -376,3 +374,4 @@ Powered by **LangChain** & **Google Gemini AI**
 **⭐ If you find this project helpful, please consider giving it a star! ⭐**
 
 </div>
+
